@@ -106,7 +106,50 @@ def createChannel(cur,connection):
     connection.commit()
 
     return True
+def watch_later_user(cur,connection):
+    cur.execute("""insert into watch_later_user() values() returning id;""")
+    connection.commit();
+    id=cur.fetchone()[0]
 
+    return
+
+def upload_video(cur,connection):
+    print("-----uploading video-------")
+    name=input("enter name of the video")
+    description=input("enter description")
+    duration=input("enter duration")
+    thumbnail=input("enter thumbnail pic storage id")
+    user_id=input("enter user id ")
+    sql="""insert into video(name,upload_date,description,duration,thumbnail,user_id,like,dislike,count_member) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,);"""
+    cur.excute(sql,(name,datetime.date,description,duration,thumbnail,user_id,0,0,0))
+    connection.commit()
+
+    return
+def comment(cur,connection):
+    print("======commenting======")
+    v_id=input("enter video id")
+    u_id=input("enter user_id")
+    text=input("enter text")
+    sql="""insert into comment(video_id,user_id,text) values (%s,%s,%s);"""
+    cur.execute(sql,(v_id,u_id,text))
+    connection.commit()
+    return
+
+def reply(cur,connection):
+    print("======replying======")
+    cm_id=input("enter comment id")
+    text = input("enter text")
+    sql="""insert into reply(comment_id,text) values (%s,%s);"""
+    cur.execute(sql,(cm_id,text))
+    connection.commit()
+    return
+def join_channel(cur,connection):
+    print("------joining channel-------")
+    user_id=input("enter user id")
+    channel_id=input("enter channel id")
+    sql="""insert into membership_channel(user_id,channel) values (%s,%s) ;"""
+    cur.execute(sql,(user_id,channel_id))
+    connection.commit()
     return
 if __name__ == '__main__':
     cur,connection=connect()
