@@ -4,7 +4,30 @@ import psycopg2
 #conn = psycopg2.connect("dbname=dvdrental user=postgres password=password")
 #!/usr/bin/python
 from configparser import ConfigParser
+from cryptography.fernet import Fernet
+def generate_key():
+    """
+    Generates a key and save it into a file
+    """
+    key = Fernet.generate_key()
+    with open("secret.key", "wb") as key_file:
+        key_file.write(key)
+def load_key():
+    """
+    Load the previously generated key
+    """
+    return open("secret.key", "rb").read()
 
+def encrypt_message(message):
+    """
+    Encrypts a message
+    """
+    key = load_key()
+    encoded_message = message.encode()
+    f = Fernet(key)
+    encrypted_message = f.encrypt(encoded_message)
+    print(encrypted_message)
+    return encrypted_message
 
 def config(filename='database.ini', section='postgresql'):
     # create a parser
@@ -75,8 +98,22 @@ def displayMainMenu():
     print('‘ 7. add watch later video’')
     print('‘ 8. comment’')
     print('‘ 9. reply’')
+    print("10. display more options ...")
     print(" — — — — — — — — — —" )
-
+def displayMainMenu2():
+    print("‘ — — — — MENU — — — -’")
+    print("‘ 11. get all the videos’")
+    print("‘ 12. search video by name’")
+    print("‘ 13. search video by id’")
+    print("‘ 14. search channel by name’")
+    print('‘ 15. search playlists’')
+    print(' 16. get video\'s view')
+    print('‘ 17. get videos like’')
+    print('‘ 18. get video dislike’')
+    print('‘ 19. delete video from channel’')
+    print('‘ 20. delete comment’')
+    #print("10. display more options ...")
+    print(" — — — — — — — — — —" )
 def get_all_videos(cur,connection):
 
     cur.execute("""select * from video;""")
@@ -155,7 +192,7 @@ def get_all_users(cur,connection):
         print("username :", user[1])
         print("prp:", user[5])
         print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`")
-def delete_video_from_channe(cur,connection):
+def delete_video_from_channel(cur,connection):
     print("-----deleting video from channel --------")
     playlist_id=input("enter playlist id")
     video_id=input("enter video id")
@@ -229,7 +266,7 @@ def registerUser(cur,connection):
     #GENERIC ID ?
     sql = """INSERT INTO user(name,username,email,password,dateofjoin,profilepic)
                  VALUES(%s,%s,%s,%s,%s,%s) RETURNING id;"""
-    cur.execute(sql,(name,username,email,password,dateofjoin,prp))
+    cur.execute(sql,(name,username,email,encrypt_message(password),dateofjoin,prp))
     connection.commit()
     return cur.fetchone()[0]
 
@@ -343,14 +380,77 @@ def cancel_membership(cur,connection):
     return
 
 
-
+def query(cur,connection):
+    sql=input("enter your sql query (you can not use insert delete update create !)")
+    cur.execute(sql)
+    return
 if __name__ == '__main__':
     cur,connection=connect()
-    print(" pls insert your query")
-    count = cur.rowcount
-    print(count, "count before")
-    cur.execute(""" insert into actor values(%s,%s,%s,%s)""",(13747,"ali","hashemi","2013-05-26 14:47:57.62"))
+    while(True):
+        displayMainMenu()
+        n=int(input("pls enter your option"))
+        if(n==0):
+            os.system("cls")
+            query(cur,connection)
+        elif n==1:
+            os.system("cls")
+            registerUser(cur,connection)
+        elif n==2:
+            os.system("cls")
+            createChannel(cur,connection)
+        elif n==3:
+            os.system("cls")
+            upload_video(cur,connection)
+        elif n==4:
+            os.system("cls")
+            join_channel(cur,connection)
+        elif n==5:
+            os.system("cls")
+            create_playlist(cur,connection)
+        elif n==6:
+            os.system("cls")
+            add_video_to_playlist(cur,connection)
+        elif n==7:
+            os.system("cls")
+            add_watch_later_video(cur,connection)
+        elif n==8:
+            os.system("cls")
+            comment(cur,connection)
+        elif n==9:
+            os.system("cls")
+            reply(cur,connection)
+        elif n==10:
+            os.system("cls")
+            displayMainMenu2()
+        elif n==11:
+            os.system("cls")
+            get_all_videos(cur,connection)
+        elif n==12:
+            os.system("cls")
+            get_video_by_name(cur,connection)
+        elif n==13:
+            os.system("cls")
+            get_video_by_id(cur,connection)
+        elif n==14:
+            os.system("cls")
+            get_channel_by_name(cur,connection)
+        elif n==15:
+            os.system("cls")
+            get_playlist(cur,connection)
+        elif n==16:
+            os.system("cls")
+            get_video_watched(cur,connection)
+        elif n==17:
+            os.system("cls")
+            get_video_likes(cur,connection)
+        elif n==18:
+            os.system("cls")
+            get_video_dislike(cur,connection)
+        elif n==19:
+            os.system("cls")
+            delete_video_from_channel(cur,connection)
+        elif n==20:
+            os.system("cls")
+            delete_comment(cur,connection)
 
-    connection.commit()
-    count = cur.rowcount
-    print(count, "Record inserted successfully into mobile table")
+    ####
