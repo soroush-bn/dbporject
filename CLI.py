@@ -65,12 +65,99 @@ def exit():
        exit()
 def displayMainMenu():
     print("‘ — — — — MENU — — — -’")
+    print("‘ 0. Run your own query’")
     print("‘ 1. Register User’")
-    print("‘ 2. All Users’")
-    print("‘ 3. All Posts’")
-    print('‘ 4. Get posts by a user’')
-    print('‘ 5. Exit’')
+    print("‘ 2. Create channel’")
+    print("‘ 3. Upload video’")
+    print('‘ 4. Join channel’')
+    print('‘ 5. Create playlist’')
+    print('‘ 6. Add video to playlist’')
+    print('‘ 7. add watch later video’')
+    print('‘ 8. comment’')
+    print('‘ 9. reply’')
     print(" — — — — — — — — — —" )
+
+def get_all_videos(cur,connection):
+
+    cur.execute("""select * from video;""")
+    videos=cur.fetchall()
+    for video in videos :
+        print("id :",video[0])
+        print("name :", video[1])
+        print("description :", video[3])
+        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`")
+
+    return
+def get_video_by_id(cur,connection):
+    id=input("enter id of the video ")
+    cur.execute("""select * from video where id=%s;""",(id))
+    video=cur.fetchone()
+    print("id :", video[0])
+    print("name :", video[1])
+    print("description :", video[3])
+    print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`")
+
+    return
+def get_all_users(cur,connection):
+    cur.execute("""select * from user;""")
+    users=cur.fetchall()
+    for user in users :
+        print("id :",user[0])
+        print("username :", user[1])
+        print("prp:", user[5])
+        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`")
+def delete_video_from_channe(cur,connection):
+    print("-----deleting video from channel --------")
+    playlist_id=input("enter playlist id")
+    video_id=input("enter video id")
+    sql="""delete from playlist_video where playlist_id=%s and video_id=%s"""
+    cur.execute(sql,(playlist_id,video_id))
+    connection.commit()
+
+    return
+def watch(cur,connection):
+    print("------saving a watched video")
+    userid=input("enter user id")
+    vidid=input("enter video id")
+    sql="""insert into user_watched() values(%s,%s,%s) ; """
+    cur.execute(sql,(vidid,userid,datetime.time))
+    connection.commit()
+
+    return
+def like(cur,connection):
+
+    like_count=0
+    vid=input("enter video id ")
+    cur.execute("""select like from video where id=%s;""",vid)
+    like_count=cur.fetchone()[0]
+    like_count+=1
+    sql="""update video set like=%s where id=%s;"""
+    cur.execute(sql,(like_count,vid))
+    connection.commit()
+
+    return
+
+def dislike(cur,connection):
+    dislike_count = 0
+    vid = input("enter video id ")
+    cur.execute("""select dislike from video where id=%s;""", vid)
+    dislike_count = cur.fetchone()[0]
+    dislike_count += 1
+    sql = """update video set dislike=%s where id=%s;"""
+    cur.execute(sql, (dislike_count, vid))
+    connection.commit()
+
+    return
+def delete_comment(cur,connection):
+    print("-------deleting comment----------")
+    id=input("pls enter cm id")
+    cur.execute("""delete from comment where id=%s ;""",id)
+    connection.commit()
+
+    return
+def delete_playlist(cur,connection):
+
+    return
 
 def registerUser(cur,connection):
     print("------user registeration------")
