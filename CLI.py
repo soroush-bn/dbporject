@@ -106,10 +106,46 @@ def createChannel(cur,connection):
     connection.commit()
 
     return True
-def watch_later_user(cur,connection):
+def add_watch_later_video(cur,connection):
+    print("======ading watch later video ")
     cur.execute("""insert into watch_later_user() values() returning id;""")
     connection.commit();
     id=cur.fetchone()[0]
+    vid=input("pls enter video id ")
+
+    sql=""" insert into watch_later_video(id,video_id) values(%s) ; """
+
+    cur.execute(sql,(id,vid))
+    connection.commit()
+
+    return
+def create_playlist(cur,connection ):
+    print("=====creating playlist=======")
+    user_id=input("enter user id")
+    sql1="""insert into playlist_user() values (%s) returning id;"""
+    cur.execute(sql1,(user_id))
+    id=cur.fetchone()[0]
+    connection.commit()
+
+    return id
+def add_video_to_playlist(cur,connection):
+    print("-----adding video to playlist -- -- -- -  ")
+    playlist_id=input("enter playlist id ")
+    video_id=input("enter video id ")
+    sql="""insert into playlist_video() values (%s,%s) ; """
+    cur.execute(sql,(playlist_id,video_id))
+    connection.commit()
+
+    return
+
+def add_video_to_channel(cur,connection):
+    print("----- adding video to your channel ------")
+    vid=input("enter video id")
+    uid=input("enter user id")
+    chid=input("enter channel id")
+    sql="""insert into user_upload() values(%s,%s,%s) ;"""
+    cur.execute(sql,(vid,uid,chid))
+    connection.commit()
 
     return
 
