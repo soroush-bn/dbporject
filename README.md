@@ -1,2 +1,2 @@
 # dbporject
-dbproject for youtube like app
+data base course final project 
